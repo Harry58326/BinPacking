@@ -6,8 +6,7 @@ public class Main {
         Bin.getRandomSizeOfItems();
         System.out.println(Arrays.toString(Bin.items));
         Bin.putItemsIntoQueue(b.q);
-        while (!b.q.isEmpty()){
-            System.out.println(b.q.poll());
-        }
+        Bin.updateBinBestFitDecreasing(b.binsArr,b.q);
+        System.out.println(b.binsArr);
     }
 }
