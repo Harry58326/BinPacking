@@ -1,77 +1,92 @@
 import java.util.*;
 
-// First fit decreasing
 public class Bin {
-    public ArrayList<Integer> binsArr;
-    public Queue<Integer> q;
-    // use an array to store the items
-    static int[] items = new int[8];
+    public ArrayList<Integer> binsArrOfUnusedSpace;  // ArrayList to store the remaining space in each bin.
+    public Queue<Integer> q;  // Priority Queue to hold the items to be placed in bins.
+
+    public ArrayList<Integer> itemsInBin;
+
+    public ArrayList<Integer> unpackedItems;
+
+    public ArrayList<ArrayList<Integer>> answer;
+
     public Bin() {
-        this.q = new PriorityQueue<>(Collections.reverseOrder());
-        this.binsArr = new ArrayList<>();
+        this.q = new PriorityQueue<>(Collections.reverseOrder());  // Items will be sorted in descending order.
+        this.binsArrOfUnusedSpace = new ArrayList<>();
+        this.itemsInBin = new ArrayList<>();
+        this.unpackedItems = new ArrayList<>();
+        this.answer = new ArrayList<>();
     }
 
-    public static int[] getRandomSizeOfItems() {
-        for (int i = 0; i < items.length; i++) {
-            items[i] = (int) (Math.random() * 10 + 1);
-        }
-        return items;
-    }
-
-    // put those items into the priority queue
-    public static Queue<Integer> putItemsIntoQueue(Queue<Integer> q) {
-        for (int i = 0; i < items.length; i++) {
-            q.offer(items[i]);
-        }
-        return q;
-    }
-
-    public static void updateBinBestFitDecreasing(ArrayList<Integer> binsArr, Queue<Integer> q) {
+    /**
+     * Update bins using Best-Fit Decreasing algorithm.
+     *
+     * @param binsArrOfUnusedSpace ArrayList that records the amount of unused space in each bin.
+     * @param q                    Priority Queue containing items to place.
+     * @param binSize              The capacity of a new bin.
+     */
+    public static void updateBinBestFitDecreasing(ArrayList<Integer> binsArrOfUnusedSpace, Queue<Integer> q, int binSize) {
         Queue<Integer> tempQ = new PriorityQueue<>(q);
-        binsArr.add(20);
-        int minAvailableSpace = 100;
-        int position = -1;
+        binsArrOfUnusedSpace.add(binSize);  // Add a new bin.
+
+        // Initialize an ArrayList to hold the indices sorted by unused space.
+        ArrayList<Integer> unUsedSpaceDescending = new ArrayList<>();
+        for (int i = 0; i < binsArrOfUnusedSpace.size(); i++) {
+            unUsedSpaceDescending.add(i);
+        }
+
+        // remove each item in the priority queue
         while (!tempQ.isEmpty()) {
-            int item = tempQ.poll();
-            boolean flag = false;
-            for (int i = 0; i < binsArr.size(); i++) {
-                if (binsArr.get(i) < minAvailableSpace){
-                    minAvailableSpace = binsArr.get(i);
-                    position = i;
+            int item = tempQ.poll();// remove the first item from the queue
+            boolean flag = false;  // To indicate if an item has been placed.
+
+            // Sort the ArrayList based on the unused space in each bin.
+            Collections.sort(unUsedSpaceDescending, (i1, i2) -> Integer.compare(binsArrOfUnusedSpace.get(i1), binsArrOfUnusedSpace.get(i2)));
+
+            // try to place an item in the least unused space
+            for (Integer integer : unUsedSpaceDescending) {
+                if (item <= binsArrOfUnusedSpace.get(integer)) {
+                    binsArrOfUnusedSpace.set(integer, binsArrOfUnusedSpace.get(integer) - item);  // Update the unused space in the bin.
+                    flag = true;  // Mark that the item has been placed.
+                    break;
                 }
             }
-            for (int i = 0; i < binsArr.size(); i++) {
-                if (item <= minAvailableSpace){
-                    binsArr.set(position, binsArr.get(position) - item);
-                    minAvailableSpace = minAvailableSpace - item;
-                    flag = true;
-                } else if (binsArr.get(i) >= item) {
-                    binsArr.set(i, binsArr.get(i) - item);
+
+            // If the item couldn't be placed in any existing bin, create a new bin.
+            if (!flag) {
+                binsArrOfUnusedSpace.add(binSize - item);
+                unUsedSpaceDescending.add(binsArrOfUnusedSpace.size() - 1);  // Add the index of the new bin to sorted indices.
+            }
+        }
+    }
+
+    /**
+     * Update bins using First-Fit Decreasing algorithm.
+     *
+     * @param binsArrOfUnusedSpace ArrayList that records the amount of unused space in each bin.
+     * @param q                    Priority Queue containing items to place.
+     * @param binSize              The capacity of a new bin.
+     */
+    public static void updateBinFirstFitDecreasing(ArrayList<Integer> binsArrOfUnusedSpace, Queue<Integer> q, int binSize) {
+        Queue<Integer> tempQ = new PriorityQueue<>(q);  // Make a temporary copy of the queue.
+
+        // Loop to process each item in the queue.
+        while (!tempQ.isEmpty()) {
+            int item = tempQ.poll();  // Retrieve and remove the head of the queue.
+            boolean flag = false;  // To indicate if an item has been placed.
+
+            // place an item into the bin, we don't care about the unused space at this time
+            for (int i = 0; i < binsArrOfUnusedSpace.size(); i++) {
+                if (binsArrOfUnusedSpace.get(i) >= item) {
+                    binsArrOfUnusedSpace.set(i, binsArrOfUnusedSpace.get(i) - item);  // Update the unused space in the bin.
                     flag = true;
                     break;
                 }
             }
 
+            // If the item couldn't be placed in any existing bin, create a new bin.
             if (!flag) {
-                binsArr.add(20 - item);
-            }
-        }
-    }
-
-    public static void updateBinFirstFitDecreasing(ArrayList<Integer> binsArr, Queue<Integer> q) {
-        Queue<Integer> tempQ = new PriorityQueue<>(q);
-        while (!tempQ.isEmpty()) {
-            int item = tempQ.poll();
-            boolean flag = false;
-            for (int i = 0; i < binsArr.size(); i++) {
-                if (binsArr.get(i) >= item) {
-                    binsArr.set(i, binsArr.get(i) - item);
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                binsArr.add(20 - item);
+                binsArrOfUnusedSpace.add(binSize - item);
             }
         }
     }
