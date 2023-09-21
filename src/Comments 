@@ -1,0 +1,62 @@
+You need to explain how the algorithm works and why it produces a close enough solution.
+
+
+In the Best-Fit Decreasing algorithm, all items are initially placed in a priority queue to
+prioritize the largest items for bin placement. This allows us to pick the largest item and put it into the bin.
+For each step we pick the largest item from the queue, it is optimal. In addition, we check if an item can
+fit in the least unused space. For each step, it is also optimal. Because each step is optimal,
+this could lead to a close enough solution; however, the final result is not guaranteed to be the optimal result.
+Because in some cases, big items would take up the space, which prevents other items from being put into the bins.
+
+
+
+
+Clearly explain why your algorithm is polynomial:
+
+1. For priority queue : nlogn because it implements binary heap to insert elements
+2. Remove an element from the Queue : it takes nlogn as it needs to reheapify
+3. Sorted unused space: O(n * mlogm) because for each item in the queue, we have to sort the unused space again.
+4. For item replacement: we take n steps for the worst case until we find a spot to put in
+
+So if we add them up, the complexity would be polynomial
+
+
+
+For this example, our algorithm doesn't provide the optimal result:
+
+Please enter bin size, number of items, items themselves
+20 9 17 17 17 16 4 15 5 14 6
+This is unused space and unpacked items: [[3, 3, 3], [16, 15, 14, 6, 5, 4]]
+This is itemsInBins: [[17], [17], [17]]
+
+The optimal result would be:
+This is unused space and unpacked items: [[0, 0, 0], [17, 17, 17]]
+This is itemsInBins: [[14, 6], [15, 5], [16, 4]]
+
+
+
+For the optimal example:
+
+Please enter bin size, number of items, items themselves
+20 9 14 5 6 2 5 15 8 4 1
+This is unused space and unpacked items: [[0, 0, 0], []]
+This is itemsInBins: [[15, 5], [14, 6], [8, 5, 4, 2, 1]]
+
+
+Other examples:
+
+Please enter bin size, number of items, items themselves
+20 8 12 4 8 15 9 3 1 10
+This is unused space and unpacked items: [[1, 0, 0], [3]]
+This is itemsInBins: [[15, 4], [12, 8], [10, 9, 1]]
+
+
+Please enter bin size, number of items, items themselves
+20 8 1 2 3 4 5 6 7 23
+This is unused space and unpacked items: [[0, 12], [23]]
+This is itemsInBins: [[7, 6, 5, 2], [4, 3, 1]]
+
+Please enter bin size, number of items, items themselves
+40 10 1 2 50 23 24 40 19 4 5 9
+This is unused space and unpacked items: [[0, 0, 12], [50, 19]]
+This is itemsInBins: [[40], [24, 9, 5, 2], [23, 4, 1]]

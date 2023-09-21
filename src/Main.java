@@ -12,17 +12,11 @@ public class Main {
             b.q.offer(item);
         }
         sc.close();
-        Bin.updateBinBestFitDecreasing(b.binsArrOfUnusedSpace,b.q,20);
-        System.out.println(b.binsArrOfUnusedSpace);
- /*       ArrayList<Integer> arr = new ArrayList<>();
-        arr.add(1);
-        arr.add(-1);
-        arr.add(100);
-        arr.add(3);
-        arr.add(29);
-        arr.add(78);
-        System.out.println(arr);
-        Collections.sort(arr, (o1, o2) -> o2 - o1 );
-        System.out.println(arr);*/
+        Bin.updateBinBestFitDecreasing(b.binsArrOfUnusedSpace,b.q,binSize,0,b.unpackedItems, 3);
+        Bin.storeResults(b.binsArrOfUnusedSpace, b.unpackedItems);
+        System.out.println("This is unused space and unpacked items: " + Bin.answer);
+        System.out.println("This is itemsInBins: " + Bin.itemsInBin);
     }
 }
+// test data is in the Comments file
+
